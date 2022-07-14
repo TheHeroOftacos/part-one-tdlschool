@@ -1,5 +1,10 @@
+import Login from "../pageObject/LoginPage"
+
 describe('empty spec', () => {
-  it('passes', () => {
-    cy.visit('https://example.cypress.io')
+  it('Login with locked_out_use', () => {
+    Login.visit()
+    Login.username.type('locked_out_user')
+    Login.password.type('secret_sauce')
+    Login.loginButton.click()
   })
 })
