@@ -1,10 +1,112 @@
 import Login from "../pageObject/LoginPage"
-
+import Base from "../pageObject/HomePage"
+import shirt from "../pageObject/Tshirt"
+import Bike from "../pageObject/bikeLight"
+import shopping from "../pageObject/shoppingCart"
+import info from "../pageObject/checkoutInfo"
 describe('empty spec', () => {
   it('Login with locked_out_use', () => {
     Login.visit()
     Login.username.type('locked_out_user')
     Login.password.type('secret_sauce')
     Login.loginButton.click()
+    Login.error.should('contain','Epic sadface: Sorry, this user has been locked out.')
   })
+  it('Login with wrong password',()=>{
+    Login.visit()
+    Login.username.type('locked_out_user')
+    Login.password.type('password')
+    Login.loginButton.click()
+    Login.error.should('contain','Epic sadface: Username and password do not match any user in this service')
+  })
+  it('Validate item amount', () => {
+    Login.visit()
+    Login.username.type('standard_user')
+    Login.password.type('secret_sauce')
+    Login.loginButton.click()
+    Base.item.should('have.length', 6)
+  })
+  it('Sort items - Price high to low', () => {
+    Login.visit()
+    Login.username.type('standard_user')
+    Login.password.type('secret_sauce')
+    Login.loginButton.click()
+    Base.filter.select('Price (high to low)')
+    Base.item.eq(0).should('contain','Sauce Labs Fleece Jacket')
+    Base.item.eq(0).should('contain','$49.99')
+  })
+  it('Sort items - Price low to High', () => {
+    Login.visit()
+    Login.username.type('standard_user')
+    Login.password.type('secret_sauce')
+    Login.loginButton.click()
+    Base.filter.select('Price (low to high)')
+    Base.item.eq(0).should('contain','Sauce Labs Onesie')
+    Base.item.eq(0).should('contain','$7.99')
+  })
+  it('Sort items - Name (Z to A)', () => {
+    Login.visit()
+    Login.username.type('standard_user')
+    Login.password.type('secret_sauce')
+    Login.loginButton.click()
+    Base.filter.select('Name (Z to A)')
+    Base.item.eq(0).should('contain','Test.allTheThings() T-Shirt (Red)')
+  })
+  it('Validate shopping cart badge amount', () => {
+    Login.visit()
+    Login.username.type('standard_user')
+    Login.password.type('secret_sauce')
+    Login.loginButton.click()
+    Base.saucetshirt.click()
+    shirt.sauceAddToCart.click()
+    shirt.shoppingCartNumb.should('contain','1')
+    shirt.BackButton.click()
+    Base.clickbike.click()
+    Bike.bikeAddToCart.click()
+    shirt.shoppingCartNumb.should('contain','2')
+  })
+  it('Reset App State', () => {
+    Login.visit()
+    Login.username.type('standard_user')
+    Login.password.type('secret_sauce')
+    Login.loginButton.click()
+    Base.saucetshirt.click()
+    shirt.sauceAddToCart.click()
+    shirt.shoppingCartNumb.should('contain','1')
+    shirt.BackButton.click()
+    Base.burger.click()
+    Base.reset.click()
+    Base.cartBadge.should('not.exist');
+  })
+  it('Validate shopping cart remove button functionality', () => {
+    Login.visit()
+    Login.username.type('standard_user')
+    Login.password.type('secret_sauce')
+    Login.loginButton.click()
+    Base.saucetshirt.click()
+    shirt.sauceAddToCart.click()
+    shirt.shoppingCartNumb.should('contain','1')
+    shirt.remove.click()
+    Base.cartBadge.should('not.exist');
+  })
+  it.only('Buy a T-shirt', () => {
+    Login.visit()
+    Login.username.type('standard_user')
+    Login.password.type('secret_sauce')
+    Login.loginButton.click()
+    Base.filter.select('Name (Z to A)')
+    Base.testShirt.click()
+    shirt.TestAddToCart.click()
+    shopping.cart.click()
+    shopping.checkout.click()
+    info.firstName.type('Markuss')
+    info.lastName.type('Haritonvs')
+    info.postal.type('1234')
+    info.continue.click()
+    info.check.should('contain','Test.allTheThings() T-Shirt (Red)')
+    info.finish.click()
+    info.finishedOrder.should('contain','THANK YOU FOR YOUR ORDER')
+  })
+  
+
 })

@@ -16,6 +16,7 @@ class Login extends BasePage {
     static get error(){
         return cy.get('[class="error-message-container error"]')
     }
+    
 
 }
 
